@@ -1,3 +1,14 @@
-# Evaluate a simple expression
-2 + 3
+------------------------------------
+-- init vars
+------------------------------------
+pi := 3.1415
+x := 8.69 - -3.5
 
+------------------------------------
+-- test if x is positive
+------------------------------------
+if x >= 0 then
+  println('x is positive')
+else
+  println('x is negative')
+end
