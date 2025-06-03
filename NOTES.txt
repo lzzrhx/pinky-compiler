@@ -1,0 +1,329 @@
+////////////////////////////////////////////////////////////////////////////////
+// This document contains course notes for the course:
+// "Compilers, Interpreters & Formal Languages" by Gustavo Pezzi
+// https://pikuma.com/courses/create-a-programming-language-compiler
+////////////////////////////////////////////////////////////////////////////////
+
+ SECTIONS:
+   #1: COURSE OVERVIEW
+   #2: NOTES
+
+
+
+  #1 | COURSE OVERVIEW:
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+ 
+   [X]  #1: Introduction
+            + Motivations & Learning Outcomes
+            + How to Take this Course
+            + Compilers as Translators
+            + Your Favorite Programming Language
+
+   [X]  #2: The Nature of Computation
+            + CPU Components
+            + Opcodes & Instructions
+            + Stack Push & Pop
+            + Control Flow
+            + CPU Status Flags
+            + CPU Components Quiz
+            + Why the 68000?
+
+   [X]  #3: Structure of a Program
+            + What is a Program?
+            + Tokens & Lexemes
+            + Syntax Tree
+            + Types of Compilers
+
+   [X]  #4: Scanning Tokens
+            + Setting Up our Project Folder
+            + Configuring Python on Windows
+            + Makefile
+            + Adding Token & Lexer Files
+            + Simple Scanning Algorithm
+            + Single-Character Tokens
+            + Ignoring Whitespace & Comments
+            + Scanning Equals & Not Equals
+            + Scanning Two-Char Tokens
+            + Scanning Numbers
+            + Why Not Just Use a RegEx?
+            + Scanning Strings & Identifiers
+            + Identifying Keywords
+            + Stropping
+            + Scanning -- as Line Comment
+            + Different Languages & Comments
+            + Multiline Comments
+            + Watching our Memory Footprint
+
+   [X]  #5: Parsing Expressions
+            + Syntax Analysis
+            + Context-Free Grammars & BNF
+            + Grammar for Simple Expressions
+            + A Model for AST Nodes
+            + Recursive Descent Parsing
+            + Parser Helper Functions (Exercise)
+            + AST of a Simple Expression
+            + Pretty AST Printing (Exercise)
+            + AST Printing & Polish Notation
+            + S-expressions
+
+   [-]  #6: Displaying Errors
+            + Terminal Colors & ANSI Escape Codes
+            + Standardizing Error Messages
+            + Storing Line Numbers in Nodes
+            + Error Recovery Strategies
+            + Renaming Term & Factor
+
+   [-]  #7: Interpreting Expressions
+            + A Tree-Walking Interpreter
+            + Coding a Simple Tree-Walking Interpreter
+            + No Signed Number Tokens
+            + Pinky Language Data Types
+            + Dynamic Types at Runtime
+            + Runtime Type Checks
+            + Can We Subtract Strings
+            + Parsing Equality & Comparison (Exercise)
+            + Parsing Equality & Comparison Operators
+            + Exponent Associativity
+            + Exponent & Unary Minus Precedence
+            + Logical And & Logical Or
+            + Short-Circuit Evaluation
+            + Chained Expressions
+            + Testing Expressions
+            + REPL
+            + Alphabets, Languages & Grammars
+            + Chumsky Grammar Hierarchy
+
+   [-]  #8: Program Statements
+            + A Program as a List of Statements
+            + Parsing Print Statements
+            + Interpreting Print Statements
+            + Automatic Semicolon Insertion
+            + PrintLn Statements (Exercise)
+            + PrintLn Statements & Escape Chars
+            + If Statements
+            + Delimiting Blocks & Dangling Else
+
+   [-]  #9: Program State
+            + Identifiers & Assignments
+            + Program State & Memory
+            + The Environment Class
+            + To "Var or Not to "Var"?
+            + Environment Load & Store (Exercise)
+            + Global & Local Variables
+
+   [-] #10: Loop Statements
+            + While Statement (Exercise)
+            + While Statements
+            + Turing Completeness
+            + For Statements
+            + Stringifying Booleans & Integers
+            + Mandelbrot Set (Exercise)
+            + The ALGOL Family of Languages
+            + Mandelbrot Set Script in Pinky
+            + Compiler-Compilers
+
+   [-] #11: Functions
+            + Functions in Pinky
+            + Function Model
+            + Parsing Function Declaration
+            + Parsing Function Call
+            + Interpreting Function Declaration
+            + Interpreting Function Call
+            + Expressions as Statemtents?
+            + Max. Number of Params (Exercise)
+            + Max. Number of Params
+            + Parsing Return Statements
+            + Interpreting Return Statements
+            + Fixing Params as Local Variables
+            + Local Variables & Shadowing
+            + Dragon Curve
+            + Simpified Cosine & Sine Functions
+
+   [-] #12: Code Generation
+            + Code Generation & VMs
+            + Example of Stack Instructions
+            + Adding Classes for Compiler & VM
+
+   [-] #13: Emitting Instructions
+            + Emitting Push Instructions
+            + I Was Promised Bytes!
+            + Emitting BinOp Instructions
+            + Formatting our Code (Exercise)
+            + Formatting our Code
+            + Emitting UnOp Instructions
+            + Step by Step Stack Execution
+            + Where are Instructions Stored?
+
+   [-] #14: Writing a VM
+            + VM Execution
+            + Unpacking Argument List
+            + VM Expression Evaluation
+            + VM Comparison Instructions
+
+   [-] #15: VM Jumps & Branches
+            + Generating Code for If Statements
+            + Generating Then & Else Labels
+            + VM Jumps & Branches
+            + String Concat Instruction?
+            + Encoding Stack Values with C
+
+   [-] #16: VM Memory & State
+            + Global Memory Load & Store
+            + Coding Globals Load & Store
+            + Scope Depth
+            + Starting & Ending Blocks
+            + Local Variables & Stack Slots
+            + Local Variables Code Generation
+            + Local Variables at Runtime
+            + Storing Globals by Slot Number
+            + Program Symbols & Debug Info
+
+   [-] #17: VM Loops
+            + While Code Generation (Exercise)
+            + Generating Code for While Statements
+
+   [-] #18: Stack & Register VMs
+            + Register vs Stack VMs
+            + Register-based Bytecode
+            + CPython Bytecode Disassembly
+            + P-Machine & P-Code
+
+   [-] #19: VM Subroutines
+            + Search Locals in Reverse Order
+            + Function Code Generation
+            + Activation Frames
+            + Function Symbol Tables
+            + Compiling Function Declarations
+            + Implementing JSR & RTS Instructions
+            + Function Parameters (Exercise)
+            + Validating Function Arity & Arguments
+            + Frame Pointer Offsets
+            + Return Statements
+            + Removing Inactive Frame Slots
+
+   [-] #20: Type Systems & Type Checkers
+            + Type Systems
+            + Type Annotations
+            + Purposes of a Type System
+
+   [-] #21: Bonus: Shunting Yard
+            + Shunting Yard for Simple Expressions
+            + Exercise: Shunting Yard Evaluation
+            + A Simple Shunting Yard Evaluation
+            + Shunting Yard & Parantheses
+            + Shunting Yard & Right-Associativity
+
+   [-] #22: Bonus: Pratt Parser
+            + Pratt Parser
+            + NUD, LED & Binding Powers
+            + Example Pratt Parsing Expression
+            + Pratt Code (Without Precedence)
+            + Pratt Code (Precedence & Parentheses)
+            + Pratt Code (Right Associativity)
+            + Pratt Code (Prefix Unary Minus)
+
+   [-] #23: Bonus: PEG
+            + Parsing Expression Grammar
+            + Using a PEG Library
+
+   [-] #24: Bonus: Optimizations
+            + Optimizations & Transformations
+            + Constant Folding & Propagation
+            + Algebraic Simplifications
+            + Dead Code Elimination
+            + Syntactic Sugar
+            + Loop Unrolling & Inlining
+            + Branch Prediction & Vectorization
+            + Tail Call & Peephole Optimization
+
+   [-] #25: Bonus: LLVM
+            + LLVM IR
+            + Function Definition in LLVM IR
+            + Using Clang to Visualize LLVM IR
+            + Integer & Float LLVM Instructions
+            + SSA Form & Phi Function
+            + LLVM Language Reference Manual
+            + LLVM Load & Store Instructions
+            + Installing Numba's llvmlite
+            + Adding a Module to LLVM
+            + Adding a Function to LLVM
+            + Loading & Storing Variables to LLVM
+            + Calling External C Functions in LLVM
+            + Emit LLVM IR for a Subset of Pinky
+            + Visiting AST Nodes & Emitting LLVM IR
+            + Emit LLVM IR fadd Instruction
+            + Emitting LLVM IR BinOps & UnOps
+            + Compiling External C Print Functions
+            + LLVM IR Assignments
+            + Emitting LLVM for If Statements
+            + Emitting LLVM IR for While Statements
+
+   [-] #27: Conclusion & Next Steps
+            + Copyright & Content Distribution
+            + Similar Courses
+            + Conclusion & Next Steps
+
+   [X] COMPLETED / [-] NOT COMPLETED
+
+
+
+  #2 | NOTES
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+   - Course goal: Learning how to make a compiler for the pinky programming language using Python
+   - Course pipeline:
+     + Lexical Analysis (lexer): scanning and finding tokens
+     + Syntax Analysis (parser): Formal grammars, context free grammars, PEG
+     + (generated from the parser) Intermediate Representation (IR) - Abstract Syntax Tree (AST)
+     + (from the AST) Interpreter
+     + (from the AST) Code Generation
+     + (from the AST) Type Checking
+     + (from the AST) Code Optimization
+   
+   - Structure of a program: Literals (numbers), identifiers (names), operators (assignment, comparison, grouping), keywords (reserved words), expressions (evaluates and results in a value), statements and nested statements (executes and cause a change), blocks
+   
+   - Binary Operator: a + b
+                     /  |  \
+          left operand  |  right operand
+                    operator
+   
+   - Unary Operator: !a
+                    /  \
+            operator    operand
+     + Prefix:  -a
+     + Postfix: a--
+   
+   - A Tokenizer / Lexer / Scanner scans character by character of the source code, identifies the token types and generates a linear list of all the tokens in the source code
+     + The token list contain information about the token type and the lexeme (token content) 
+   - A parser generates the Abstract Syntax Tree (AST)
+     + The AST does not worry about program correctness
+     + AST can be used for type checking, optimization and code generation
+   - Parser: Is the input syntactically correct?
+   - Formal Grammar:
+     + Defined as a set of production rules for such strings in a formal language
+     + Descibes which strings from an alphabet of a formal language are valid according to the language's syntax
+     + A grammar does not describe the meaning of the strings, or what can be done with the strings, only their form.
+     + Formal language theory is a branch of applied mathematics (applications are found in theoretical computer science, linguistics, formal semantics, and mathematical logic)
+   - Describing syntax:
+     + Context-free grammars can generate context-free languages. This is done by taking a set of recursively defined variables, in terms of one another, by a set of production rules.
+       + Any of the production rules in the grammar can be applied regardless of context
+       + Backus-Naur form (BNF) is a formal notation for describing the syntax of a language. BNF is often used to describe context-free grammars.
+         + BNF started when people from IBM where trying to define the syntax of the language ALGOL 58 and ALGOL 60
+         + Defined by John Backus and Peter Naur
+         + BNF can be visually represented by a syntax diagram (a.k.a. railroad diagram)
+         + There are programs & tools available that can read the grammar in BNF notation and automatically generate a parser. Some examples are Lex, Yacc, Bison and ANTLR
+         + There is also EBNF (Extended Backus-Naur Form) that adds some enchancements like multiple-line rules, specifiers for number of repetitions, comments, etc.
+     + Parsing Expression Grammar (PEG) - A Popular alternative to context-free grammars
+       + Another way of describing a formal language, but with different rules, like allowing backtracking and the order of the production matters in the interpretation
+     + Grammar for simple expressions (the order matters (precedence of operators)):
+       + <expr>    ::= <term> ( <addop> <term> )*
+       + <term>    ::= <factor> ( <mulop> <factor> )*
+       + <factor>  ::= <unary>
+       + <unary>   ::= ('+'|'-'|'~') <unary> | <primary>
+       + <primary> ::= <number> | '('<expr>')'
+       + <addop>   ::= '+' | '-'
+       + <mulop>   ::= '*' | '/'
+       + <number>  ::= <digit>+
+       + <digit>   ::= '0' | '1' | ... | '9'
+    + For this course we'll use Recursive Descent Parsing (top-down parser)
+
+
