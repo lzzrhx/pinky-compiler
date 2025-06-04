@@ -19,3 +19,21 @@ def print_pretty_ast(ast_text):
                 print(' '*i, end='')
             print(ch, end='')
             newline = False
+
+def lexing_error(message, lineno):
+    print(f'{Colors.RED}[Line {lineno}]: {message}{Colors.WHITE}')
+    import sys
+    sys.exit(1)
+
+def parse_error(message, lineno):
+    print(f'{Colors.RED}[Line {lineno}]: {message}{Colors.WHITE}')
+    import sys
+    sys.exit(1)
+
+class Colors:
+    WHITE  = '\033[0m'
+    BLUE   = '\033[94m'
+    CYAN   = '\033[96m'
+    GREEN  = '\033[92m'
+    YELLOW = '\033[93m'
+    RED    = '\033[91m'

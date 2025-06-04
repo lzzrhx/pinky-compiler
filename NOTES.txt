@@ -66,7 +66,7 @@
             + AST Printing & Polish Notation
             + S-expressions
 
-   [-]  #6: Displaying Errors
+   [X]  #6: Displaying Errors
             + Terminal Colors & ANSI Escape Codes
             + Standardizing Error Messages
             + Storing Line Numbers in Nodes
@@ -325,5 +325,8 @@
        + <number>  ::= <digit>+
        + <digit>   ::= '0' | '1' | ... | '9'
     + For this course we'll use Recursive Descent Parsing (top-down parser)
-
+    + Error Recovery Strategies:
+      + Panic mode
+      + Phrase-level Recovery
+      + Others: error production / global correction / symbol tables
 
