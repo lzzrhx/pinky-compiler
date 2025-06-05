@@ -29,6 +29,9 @@ class Parser:
         else:
             parse_error(f'Expected {expected_type}, found {self.peek().lexeme!r}.', self.peek().line)
 
+    def previous_token(self):
+        return self.tokens[self.curr - 1]
+
     def match(self, expected_type):
         if self.curr >= len(self.tokens):
             return False
@@ -37,33 +40,59 @@ class Parser:
         self.curr = self.curr + 1
         return True
 
-    def previous_token(self):
-        return self.tokens[self.curr - 1]
-
-    # <primary> ::= <integer> | <float> | '(' <expr> ')'
+    # <primary> ::= <integer> | <float> | <bool> | <string> | '(' <expr> ')'
     def primary(self):
-        if self.match(TOK_INTEGER): return Integer(int(self.previous_token().lexeme), line = self.previous_token().line)
-        if self.match(TOK_FLOAT): return Float(float(self.previous_token().lexeme), line = self.previous_token().line)
-        if self.match(TOK_LPAREN):
+        if self.match(TOK_INTEGER):
+            return Integer(int(self.previous_token().lexeme), line = self.previous_token().line)
+        elif self.match(TOK_FLOAT):
+            return Float(float(self.previous_token().lexeme), line = self.previous_token().line)
+        elif self.match(TOK_TRUE):
+            return Bool(True, line = self.previous_token().line)
+        elif self.match(TOK_FALSE):
+            return Bool(False, line = self.previous_token().line)
+        elif self.match(TOK_STRING):
+            return String(str(self.previous_token().lexeme[1:-1]), line = self.previous_token().line)
+        elif self.match(TOK_LPAREN):
             expr = self.expr()
-            if (not self.match(TOK_RPAREN)): parse_error(f'Error: ")" expected.', self.previous_token().line)
-            else: return Grouping(expr, line = self.previous_token().line)
+            if (not self.match(TOK_RPAREN)):
+                parse_error(f'Error: ")" expected.', self.previous_token().line)
+            else:
+                return Grouping(expr, line = self.previous_token().line)
 
-    # <unary> ::= ('+'|'-'|'~') <unary> | <primary>
+    # <exponent> ::= <primary> ( '^' <exponent> )*
+    def exponent(self):
+        expr = self.primary()
+        while self.match(TOK_CARET):
+            op = self.previous_token()
+            right = self.exponent()
+            expr = BinOp(op, expr, right, line = op.line)
+        return expr
+
+    # <unary> ::= ( '+' | '-' | '~' )* <exponent>
     def unary(self):
-        if self.match(TOK_NOT) or self.match(TOK_MINUS) or self.match(TOK_PLUS):
+        if self.match(TOK_PLUS) or self.match(TOK_MINUS) or self.match(TOK_NOT):
             op = self.previous_token()
             operand = self.unary()
-            return UnOp(op, operand, line= self.previous_token().line)
-        return self.primary()
+            return UnOp(op, operand, line = op.line)
+        return self.exponent()
+
+    # <modulo> ::= <unary> ( "%" <unary> )*
+    def modulo(self):
+        expr = self.unary()
+        if self.match(TOK_MOD):
+            op = self.previous_token()
+            right = self.unary()
+            expr = BinOp(op, expr, right, line = op.line)
+        return expr
+
 
     # <multiplication> ::= <unary> ( ('*'|'/') <unary> )*
     def multiplication(self):
-        expr = self.unary()
-        while self.match(TOK_STAR) or self.match(TOK_MINUS):
+        expr = self.modulo()
+        while self.match(TOK_STAR) or self.match(TOK_SLASH):
             op = self.previous_token()
-            right = self.unary()
-            expr = BinOp(op, expr, right, line = self.previous_token().line)
+            right = self.modulo()
+            expr = BinOp(op, expr, right, line = op.line)
         return expr
 
     # <addition> ::= <multiplication> ( ('+'|'-') <multiplication> )*
@@ -72,11 +101,47 @@ class Parser:
         while self.match(TOK_PLUS) or self.match(TOK_MINUS):
             op = self.previous_token()
             right = self.multiplication()
-            expr = BinOp(op, expr, right, line = self.previous_token().line)
+            expr = BinOp(op, expr, right, line = op.line)
+        return expr
+
+    # <comparison> ::= <addition> ( ( ">" | ">=" | "<" | "<=" ) <addition> ) *
+    def comparison(self):
+        expr = self.addition()
+        while self.match(TOK_GT) or self.match(TOK_GE) or self.match(TOK_LT) or self.match(TOK_LE):
+            op = self.previous_token()
+            right = self.addition()
+            expr = BinOp(op, expr, right, line = op.line)
+        return expr
+
+    # <equality> ::= <comparison> ( ( "~=" | "==" ) <comparison> )*
+    def equality(self):
+        expr = self.comparison()
+        while self.match(TOK_NE) or self.match(TOK_EQEQ):
+            op = self.previous_token()
+            right = self.comparison()
+            expr = BinOp(op, expr, right, line = op.line)
+        return expr
+
+    # <logical_and> ::= <equality> ( "and" <equality> )*
+    def logical_and(self):
+        expr = self.equality()
+        while self.match(TOK_AND):
+            op = self.previous_token()
+            right = self.equality()
+            expr = LogicalOp(op, expr, right, line = op.line)
+        return expr
+
+    # <logical_or> ::= <logical_and> ( "or" <logical_and> )*
+    def logical_or(self):
+        expr = self.logical_and()
+        while self.match(TOK_OR):
+            op = self.previous_token()
+            right = self.logical_and()
+            expr = LogicalOp(op, expr, right, line = op.line)
         return expr
 
     def expr(self):
-        return self.addition()
+        return self.logical_or()
 
     def parse(self):
         ast = self.expr()

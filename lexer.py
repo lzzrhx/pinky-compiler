@@ -15,6 +15,8 @@ class Lexer:
         return ch
 
     def peek(self):
+        if self.curr >= len(self.source):
+            return '\0'
         return self.source[self.curr]
 
     def lookahead(self, n=1):

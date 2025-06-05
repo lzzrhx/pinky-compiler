@@ -10,14 +10,12 @@ class Expr(Node):
     '''
     Expressions evaluate to a result. Example: x + (2 * y) >= 6
     '''
-    #TODO:
     pass
 
 class Stmt(Node):
     '''
     Statements perform an action. Example:
     '''
-    #TODO:
     pass
 
 class Integer(Expr):
@@ -42,6 +40,28 @@ class Float(Expr):
     def __repr__(self):
         return f'Float[{self.value}]'
 
+class Bool(Expr):
+    '''
+    Example: true, false
+    '''
+    def __init__(self, value, line):
+        assert isinstance(value, bool), value
+        self.value = value
+        self.line = line
+    def __repr__(self):
+        return f'Bool[{self.value}]'
+
+class String(Expr):
+    '''
+    Example: 'this is string'
+    '''
+    def __init__(self, value, line):
+        assert isinstance(value, str), value
+        self.value = value
+        self.line = line
+    def __repr__(self):
+        return f'String[{self.value}]'
+
 class UnOp(Expr):
     '''
     Example: -operand
@@ -54,6 +74,21 @@ class UnOp(Expr):
         self.line = line
     def __repr__(self):
         return f'UnOp({self.op.lexeme!r}, {self.operand})'
+
+class LogicalOp(Expr):
+    '''
+    Example: x and y
+    '''
+    def __init__(self, op: Token, left: Expr, right: Expr, line):
+        assert isinstance(op, Token), op
+        assert isinstance(left, Expr), left
+        assert isinstance(right, Expr), right
+        self.op = op
+        self.left = left
+        self.right = right
+        self.line = line
+    def __repr__(self):
+        return f'LogicalOp({self.op.lexeme!r}, {self.left}, {self.right})'
 
 class Grouping(Expr):
     '''
@@ -82,18 +117,14 @@ class BinOp(Expr):
         return f'BinOp({self.op.lexeme!r}, {self.left}, {self.right})'
 
 class WhileStmt(Stmt):
-    #TODO:
     pass
 
 class Assignment(Stmt):
-    #TODO:
     pass
 
 class IfStmt(Stmt):
-    #TODO:
     pass
 
 class ForStmt(Stmt):
-    #TODO:
     pass
 
