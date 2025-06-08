@@ -18,3 +18,19 @@
 -- false and false or true  -- true
 -- 2 > 1 and 4 > 6 or 7 + 3 >= 6 and 5 == 2 -- false
 
+------------------------------------
+-- Statements
+------------------------------------
+--print 1 + 2
+--print 3 * 2^2
+--println("test ln")
+--print("test")
+
+------------------------------------
+-- If statement test
+------------------------------------
+if 5 > 2 then
+    print("Entered the consequence (then)")
+else
+    print("Entered the alternative (else)")
+end

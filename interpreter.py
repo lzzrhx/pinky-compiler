@@ -1,6 +1,7 @@
 from model import *
 from tokens import *
 from utils import *
+import codecs
 
 ################################################################################
 # Constants for different runtime value types
@@ -140,4 +141,21 @@ class Interpreter:
                 else:
                     runtime_error(f'Unsupported operator {node.op.lexeme!r} with {operandtype}.', node.op.line)
 
+        elif isinstance(node, Stmts):
+            for stmt in node.stmts:
+                self.interpret(stmt)
+
+        elif isinstance(node, PrintStmt):
+            exprtype, exprval = self.interpret(node.value)
+            print(codecs.escape_decode(bytes(str(exprval), "utf-8"))[0].decode("utf-8"), end = node.end)
+            #print(exprval)
+
+        elif isinstance(node, IfStmt):
+            testtype, testval = self.interpret(node.test)
+            if testtype != TYPE_BOOL:
+                runtime_error("Condition test is not a boolean expression.", node.line)
+            if testval:
+                self.interpret(node.then_stmts)
+            else:
+                self.interpret(node.else_stmts)
 

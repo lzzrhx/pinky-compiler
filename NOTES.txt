@@ -93,7 +93,7 @@
             + Alphabets, Languages & Grammars
             + Chumsky Grammar Hierarchy
 
-   [-]  #8: Program Statements
+   [X]  #8: Program Statements
             + A Program as a List of Statements
             + Parsing Print Statements
             + Interpreting Print Statements

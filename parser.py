@@ -143,6 +143,57 @@ class Parser:
     def expr(self):
         return self.logical_or()
 
+    # <print_stmt> ::= "print" <expr>
+    def print_stmt(self, end):
+        if self.match(TOK_PRINT) or self.match(TOK_PRINTLN):
+            val = self.expr()
+            return PrintStmt(val, end, line = self.previous_token().line)
+
+    # <if_stmt> ::= "if" <expr> "then" <stmts> ( "else" <stmts> )? "end"
+    def if_stmt(self):
+        self.expect(TOK_IF)
+        test = self.expr()
+        self.expect(TOK_THEN)
+        then_stmts = self.stmts()
+        if self.is_next(TOK_ELSE):
+            self.advance() # Consume the else
+            else_stmts = self.stmts()
+        else:
+            else_stmts = None
+        self.expect(TOK_END)
+        return IfStmt(test, then_stmts, else_stmts, line = self.previous_token().line)
+
+    # Predicitve parsing. The next token predicts the next statement.
+    def stmt(self):
+        if self.peek().token_type == TOK_PRINT:
+            return self.print_stmt(end='')
+        elif self.peek().token_type == TOK_PRINTLN:
+            return self.print_stmt(end='\n')
+        elif self.peek().token_type == TOK_IF:
+            return self.if_stmt()
+        #elif self.peek().token_type == TOK_WHILE:
+        #    return self.while_stmt()
+        #elif self.peek().token_type == TOK_FOR:
+        #    return self.for_stmt()
+        #elif self.peek().token_type == TOK_FUNC:
+        #    return self.func_decl()
+        else:
+            pass
+        
+
+    def stmts(self):
+        stmts = []
+        # Loop all statements of the current block (until an "end", "else" or EOF is found)
+        while self.curr < len(self.tokens) and not self.is_next(TOK_ELSE) and not self.is_next(TOK_END):
+            stmt = self.stmt()
+            stmts.append(stmt)
+        return Stmts(stmts, line = self.previous_token().line)
+
+    # <program> ::= <stmt>*
+    def program(self):
+        stmts = self.stmts()
+        return stmts
+
     def parse(self):
-        ast = self.expr()
+        ast = self.program()
         return ast
