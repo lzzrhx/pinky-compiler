@@ -53,7 +53,7 @@ class Interpreter:
                 if lefttype == TYPE_NUMBER and righttype == TYPE_NUMBER:
                     return (TYPE_NUMBER, leftval + rightval)
                 elif lefttype == TYPE_STRING or righttype == TYPE_STRING:
-                    return (TYPE_STRING, str(leftval) + str(rightval))
+                    return (TYPE_STRING, stringify(leftval) + stringify(rightval))
                 else:
                     runtime_error(f'Unsupported operator {node.op.lexeme!r} between {lefttype} and {righttype}.', node.op.line)
             
@@ -162,7 +162,7 @@ class Interpreter:
 
         elif isinstance(node, PrintStmt):
             exprtype, exprval = self.interpret(node.value, env)
-            print(codecs.escape_decode(bytes(str(exprval), "utf-8"))[0].decode("utf-8"), end = node.end)
+            print(codecs.escape_decode(bytes(stringify(exprval), "utf-8"))[0].decode("utf-8"), end = node.end)
 
         elif isinstance(node, IfStmt):
             testtype, testval = self.interpret(node.test, env)
@@ -172,6 +172,40 @@ class Interpreter:
                 self.interpret(node.then_stmts, env.new_env())
             else: 
                 self.interpret(node.else_stmts, env.new_env())
+
+        elif isinstance(node, WhileStmt):
+            new_env = env.new_env()
+            while True:
+                testtype, testval = self.interpret(node.test, env)
+                if testtype != TYPE_BOOL:
+                    runtime_error("Condition test is not a boolean expression.", node.line)
+                if not testval:
+                    break
+                self.interpret(node.stmts, new_env)
+
+        elif isinstance(node, ForStmt):
+            varname = node.ident.name
+            itype, i = self.interpret(node.start, env)
+            endtype, end = self.interpret(node.end, env)
+            new_env = env.new_env()
+            if i < end:
+                step = 1
+                if node.step is not None:
+                    steptype, step = self.interpret(node.step, env)
+                while i <= end:
+                    newval = (TYPE_NUMBER, i)
+                    env.set_var(varname, newval)
+                    self.interpret(node.stmts, new_env)
+                    i = i + step
+            else:
+                step = -1
+                if node.step is not None:
+                    steptype, step = self.interpret(node.step, env)
+                while i >= end:
+                    newval = (TYPE_NUMBER, i)
+                    env.set_var(varname, newval)
+                    self.interpret(node.stmts, new_env)
+                    i = i + step
 
     # Interpreter entry point, creating a brand new global (parent) environment
     def interpret_ast(self, node):

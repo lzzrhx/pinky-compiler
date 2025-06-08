@@ -1,4 +1,4 @@
 run:
-	python pinky.py scripts/myscript.pinky
+	python src/pinky.py scripts/myscript.pinky
 test:
-	python test.py
+	python src/test.py

@@ -35,6 +35,9 @@
 --    print("Entered the alternative (else)")
 --end
 
+------------------------------------
+-- Variable test
+------------------------------------
 x := 0
 x := x + 1
 println("the value of x is " + x)
@@ -46,4 +49,20 @@ if 5 ~= 2 then
 else
     x:= y
     println("Error, no local variable " + y)
+end
+
+------------------------------------
+-- While statement test
+------------------------------------
+i := 1
+while i <= 10 do
+    println("i = " + i)
+    i := i + 1
+end
+
+------------------------------------
+-- For statement test
+------------------------------------
+for num := 1, 30, 2 do
+    println("num = " + num)
 end

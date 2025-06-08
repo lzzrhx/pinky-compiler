@@ -138,9 +138,6 @@ class Stmts(Node):
     def __repr__(self):
         return f'Stmts({self.stmts})'
 
-class WhileStmt(Stmt):
-    pass
-
 class Assignment(Stmt):
     '''
     left := right
@@ -169,8 +166,37 @@ class IfStmt(Stmt):
     def __repr__(self):
         return f'IfStmt({self.test}, then:{self.then_stmts}, else:{self.else_stmts})'
 
+class WhileStmt(Stmt):
+    '''
+    "while" <expr> "do" <stmts> "end"
+    '''
+    def __init__(self, test, stmts, line):
+        assert isinstance(test, Expr), test
+        assert isinstance(stmts, Stmts), stmts
+        self.test = test
+        self.stmts = stmts
+        self.line = line
+    def __repr__(self):
+        return f'WhileStmt({self.test}, do:{self.stmts})'
+
 class ForStmt(Stmt):
-    pass
+    '''
+    "for" <identifier> ":=" <start> "," <end> ("," <increment>)? "do" <stmts> "end"
+    '''
+    def __init__(self, ident, start, end, step, stmts, line):
+        assert isinstance(ident, Identifier), ident
+        assert isinstance(start, Expr), start
+        assert isinstance(end, Expr), end
+        assert isinstance(step, Expr) or step is None, step
+        assert isinstance(stmts, Stmts), stmts
+        self.ident = ident
+        self.start = start
+        self.end = end
+        self.step = step
+        self.stmts = stmts
+        self.line = line
+    def __repr__(self):
+        return f'ForStmt({self.ident}, start:{self.stmts}, end:{self.end}, step:{self.step}, stmts:{self.stmts})'
 
 class PrintStmt(Stmt):
     '''

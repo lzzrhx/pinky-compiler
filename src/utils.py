@@ -20,6 +20,15 @@ def print_pretty_ast(ast_text):
             print(ch, end='')
             newline = False
 
+def stringify(val):
+    if isinstance(val, bool) and val is True:
+        return "true"
+    if isinstance(val, bool) and val is False:
+        return "false"
+    if isinstance(val, float) and val.is_integer():
+        return str(int(val))
+    return str(val)
+
 def lexing_error(message, lineno):
     print(f'{Colors.RED}[Line {lineno}]: {message}{Colors.WHITE}')
     import sys

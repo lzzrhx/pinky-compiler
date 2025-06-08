@@ -166,6 +166,32 @@ class Parser:
         self.expect(TOK_END)
         return IfStmt(test, then_stmts, else_stmts, line = self.previous_token().line)
 
+    # <while_stmt> ::= "while" <expr> "do" <stmts> "end"
+    def while_stmt(self):
+        self.expect(TOK_WHILE)
+        test = self.expr()
+        self.expect(TOK_DO)
+        stmts = self.stmts()
+        self.expect(TOK_END)
+        return WhileStmt(test, stmts, line = self.previous_token().line)
+
+    # <for_stmt> ::= "for" <identifier> ":=" <start> "," <end> ("," <increment>)? "do" <stmts> "end"
+    def for_stmt(self):
+        self.expect(TOK_FOR)
+        identifier = self.primary()
+        self.expect(TOK_ASSIGN)
+        start = self.expr()
+        self.expect(TOK_COMMA)
+        end = self.expr()
+        step = None
+        if self.is_next(TOK_COMMA):
+            self.advance()
+            step = self.expr()
+        self.expect(TOK_DO)
+        stmts = self.stmts()
+        self.expect(TOK_END)
+        return ForStmt(identifier, start, end, step, stmts, line = self.previous_token().line)
+
     # Predicitve parsing. The next token predicts the next statement.
     def stmt(self):
         if self.peek().token_type == TOK_PRINT:
@@ -174,10 +200,10 @@ class Parser:
             return self.print_stmt(end='\n')
         elif self.peek().token_type == TOK_IF:
             return self.if_stmt()
-        #elif self.peek().token_type == TOK_WHILE:
-        #    return self.while_stmt()
-        #elif self.peek().token_type == TOK_FOR:
-        #    return self.for_stmt()
+        elif self.peek().token_type == TOK_WHILE:
+            return self.while_stmt()
+        elif self.peek().token_type == TOK_FOR:
+            return self.for_stmt()
         #elif self.peek().token_type == TOK_FUNC:
         #    return self.func_decl()
         else:
