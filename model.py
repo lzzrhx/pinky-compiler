@@ -116,6 +116,17 @@ class BinOp(Expr):
     def __repr__(self):
         return f'BinOp({self.op.lexeme!r}, {self.left}, {self.right})'
 
+class Identifier(Expr):
+    '''
+    Example: x, PI, _score, start_vel
+    '''
+    def __init__(self, name, line):
+        assert isinstance(name, str), name
+        self.name = name
+        self.line = line
+    def __repr__(self):
+        return f'Identifier[{self.name}]'
+
 class Stmts(Node):
     '''
     A list of statements
@@ -131,7 +142,17 @@ class WhileStmt(Stmt):
     pass
 
 class Assignment(Stmt):
-    pass
+    '''
+    left := right
+    '''
+    def __init__(self, left, right, line):
+        assert isinstance(left, Expr), left
+        assert isinstance(right, Expr), right
+        self.left = left
+        self.right = right
+        self.line = line
+    def __repr__(self):
+        return f'Assignment({self.left}, {self.right})'
 
 class IfStmt(Stmt):
     '''

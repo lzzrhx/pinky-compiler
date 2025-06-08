@@ -103,7 +103,7 @@
             + If Statements
             + Delimiting Blocks & Dangling Else
 
-   [-]  #9: Program State
+   [X]  #9: Program State
             + Identifiers & Assignments
             + Program State & Memory
             + The Environment Class

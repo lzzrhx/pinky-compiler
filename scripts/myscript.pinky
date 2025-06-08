@@ -29,8 +29,21 @@
 ------------------------------------
 -- If statement test
 ------------------------------------
-if 5 > 2 then
-    print("Entered the consequence (then)")
+--if 5 > 2 then
+--    print("Entered the consequence (then)")
+--else
+--    print("Entered the alternative (else)")
+--end
+
+x := 0
+x := x + 1
+println("the value of x is " + x)
+
+if 5 ~= 2 then
+    y := x + 20
+    println("I have access to the local y = " + y)
+    println("I have also access to the global x = " +x)
 else
-    print("Entered the alternative (else)")
+    x:= y
+    println("Error, no local variable " + y)
 end

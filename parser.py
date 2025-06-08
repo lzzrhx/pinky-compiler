@@ -58,6 +58,9 @@ class Parser:
                 parse_error(f'Error: ")" expected.', self.previous_token().line)
             else:
                 return Grouping(expr, line = self.previous_token().line)
+        else:
+            identifier = self.expect(TOK_IDENTIFIER)
+            return Identifier(identifier.lexeme, line = self.previous_token().line)
 
     # <exponent> ::= <primary> ( '^' <exponent> )*
     def exponent(self):
@@ -178,8 +181,14 @@ class Parser:
         #elif self.peek().token_type == TOK_FUNC:
         #    return self.func_decl()
         else:
-            pass
-        
+            left = self.expr()
+            # Asssignment:
+            if self.match(TOK_ASSIGN):
+                right = self.expr()
+                return Assignment(left, right, line = self.previous_token().line)
+            # Function call
+            else:
+                pass
 
     def stmts(self):
         stmts = []
