@@ -144,7 +144,7 @@
             + Example of Stack Instructions
             + Adding Classes for Compiler & VM
 
-   [-] #13: Emitting Instructions
+   [X] #13: Emitting Instructions
             + Emitting Push Instructions
             + I Was Promised Bytes!
             + Emitting BinOp Instructions
@@ -279,7 +279,7 @@
      + (from the AST) Type Checking
      + (from the AST) Code Optimization
     - Phase 1: Interpreter: Tokens -> Lexer -> Model -> Parser -> Error handling -> Interpreting expressions -> Interpreting statements -> Identifiers and assignment (Environments) -> Loops (While / For) -> Functions
-    - Phase 2: Compiler: Emitting Virtual Machine Instructions -> Virtual Machine
+    - Phase 2: Compiler: Emitting Virtual Machine Instructions (compiler.py) -> Running Virtual Machine (vm.py)
    
    - Structure of a program: Literals (numbers), identifiers (names), operators (assignment, comparison, grouping), keywords (reserved words), expressions (evaluates and results in a value), statements and nested statements (executes and cause a change), blocks
    

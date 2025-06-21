@@ -1,4 +1,4 @@
-def print_pretty_ast(ast_text):
+def print_ast(ast_text):
     i = 0
     newline = False
     for ch in str(ast_text):
