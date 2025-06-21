@@ -111,7 +111,7 @@
             + Environment Load & Store (Exercise)
             + Global & Local Variables
 
-   [-] #10: Loop Statements
+   [X] #10: Loop Statements
             + While Statement (Exercise)
             + While Statements
             + Turing Completeness
@@ -122,7 +122,7 @@
             + Mandelbrot Set Script in Pinky
             + Compiler-Compilers
 
-   [-] #11: Functions
+   [X] #11: Functions
             + Functions in Pinky
             + Function Model
             + Parsing Function Declaration
@@ -278,6 +278,7 @@
      + (from the AST) Code Generation
      + (from the AST) Type Checking
      + (from the AST) Code Optimization
+    - Tokens -> Lexer -> Model -> Parser -> Error handling -> Interpreting expressions -> Interpreting statements -> Identifiers and assignment (Environments) -> Loops (While / For) -> Functions
    
    - Structure of a program: Literals (numbers), identifiers (names), operators (assignment, comparison, grouping), keywords (reserved words), expressions (evaluates and results in a value), statements and nested statements (executes and cause a change), blocks
    
@@ -389,5 +390,6 @@
       + yacc (Yet Another Compiler-Compiler) - Parser generator
       + ANTL (ANother Tool for Language Recognition) - Modern compiler-compiler
       + Other tools: Flex/Bison
+
     + TODO: Implement a REPL
 

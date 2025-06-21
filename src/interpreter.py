@@ -45,6 +45,12 @@ class Interpreter:
             # Update the value of the variable of create a new one
             env.set_var(node.left.name, (righttype, rightval))
 
+        elif isinstance(node, LocalAssignment):
+            # Evaluate the righ-hand side expression
+            righttype, rightval = self.interpret(node.right, env)
+            # Always create a new variable in the current scope
+            env.set_local(node.left.name, (righttype, rightval))
+
         elif isinstance(node, BinOp):
             lefttype, leftval = self.interpret(node.left, env)
             righttype, rightval = self.interpret(node.right, env)
@@ -206,9 +212,52 @@ class Interpreter:
                     env.set_var(varname, newval)
                     self.interpret(node.stmts, new_env)
                     i = i + step
+        
+        elif isinstance(node, FuncDecl):
+            env.set_func(node.name, (node, env))
+
+        elif isinstance(node, FuncCall):
+            # Make sure the function was declared
+            func = env.get_func(node.name)
+            if not func:
+                runtime_error(f'Function {node.name!r} not declared.', node.line)
+
+            # Fetch the function declaration and environment
+            func_decl = func[0]
+            func_env  = func[1]
+
+            # Does the number of args match the expected number of params
+            if len(node.args) != len(func_decl.params):
+                runtime_error(f'Function {func_decl.name!r} expected {len(func_decl.params)} param(s) but {len(node.args)} arg(s) were passed.', node.line)
+
+            # Evaluate all the args
+            args = []
+            for arg in node.args:
+                args.append(self.interpret(arg, env))
+
+            # Create a new nested block environment for the function
+            new_func_env = func_env.new_env()
+
+            # Create a local variables in the new child environment of the function
+            for param, argval in zip(func_decl.params, args):
+                new_func_env.set_local(param.name, argval)
+
+            # Interpret the stmts of the function declaration
+            try:
+                self.interpret(func_decl.stmts, new_func_env)
+            except Return as e:
+                return e.args[0] # Args is the arguments passed to the exception
+
+        elif isinstance(node, RetStmt):
+            raise Return(self.interpret(node.value, env))
+
+        elif isinstance(node, FuncCallStmt):
+            self.interpret(node.expr, env)
 
     # Interpreter entry point, creating a brand new global (parent) environment
     def interpret_ast(self, node):
         env = Environment()
         self.interpret(node, env)
 
+class Return(Exception):
+    pass

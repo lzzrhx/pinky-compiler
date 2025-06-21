@@ -60,7 +60,12 @@ class Parser:
                 return Grouping(expr, line = self.previous_token().line)
         else:
             identifier = self.expect(TOK_IDENTIFIER)
-            return Identifier(identifier.lexeme, line = self.previous_token().line)
+            if self.match(TOK_LPAREN):
+                args = self.args()
+                self.expect(TOK_RPAREN)
+                return FuncCall(identifier.lexeme, args, line = self.previous_token().line)
+            else:
+                return Identifier(identifier.lexeme, line = self.previous_token().line)
 
     # <exponent> ::= <primary> ( '^' <exponent> )*
     def exponent(self):
@@ -192,7 +197,56 @@ class Parser:
         self.expect(TOK_END)
         return ForStmt(identifier, start, end, step, stmts, line = self.previous_token().line)
 
+    # <params> ::= <identifier> ( "," <identifier> )*
+    def params(self):
+        params = []
+        num = 0
+        while not self.is_next(TOK_RPAREN):
+            name = self.expect(TOK_IDENTIFIER)
+            num += 1
+            if num > 255:
+                parse_error(f'Functions cannot have more than 255 parameters.', name.line)
+            params.append(Param(name.lexeme, line = self.previous_token().line))
+            if not self.is_next(TOK_RPAREN):
+                self.expect(TOK_COMMA)
+        return params
+
+    # <args> ::= <expr> ( "," <expr> )*
+    def args(self):
+        args = []
+        while not self.is_next(TOK_RPAREN):
+            args.append(self.expr())
+            if not self.is_next(TOK_RPAREN):
+                self.expect(TOK_COMMA)
+        return args
+
+    # <func_decl> ::= "func" <name> "(" <params>? ")" <stmts> "end"
+    def func_decl(self):
+        self.expect(TOK_FUNC)
+        name = self.expect(TOK_IDENTIFIER)
+        self.expect(TOK_LPAREN)
+        params = self.params()
+        self.expect(TOK_RPAREN)
+        stmts = self.stmts()
+        self.expect(TOK_END)
+        return FuncDecl(name.lexeme, params, stmts, line = self.previous_token().line)
+
+    # <local_assign> ::= "local" <assign>
+    def local_assign(self):
+        self.expect(TOK_LOCAL)
+        left = self.expr()
+        self.expect(TOK_ASSIGN)
+        right = self.expr()
+        return LocalAssignment(left, right, line = self.previous_token().line)
+
+    # <ret_stmt> ::= "ret" <expr>
+    def ret_stmt(self):
+        self.expect(TOK_RET)
+        value = self.expr()
+        return RetStmt(value, line = self.previous_token().line)
+
     # Predicitve parsing. The next token predicts the next statement.
+    # <stmt> ::= print_stmt  | if_stmt | assign | local_assign | while_stmt | for_stmt | func_decl | func_call | ret_stmt
     def stmt(self):
         if self.peek().token_type == TOK_PRINT:
             return self.print_stmt(end='')
@@ -204,17 +258,21 @@ class Parser:
             return self.while_stmt()
         elif self.peek().token_type == TOK_FOR:
             return self.for_stmt()
-        #elif self.peek().token_type == TOK_FUNC:
-        #    return self.func_decl()
+        elif self.peek().token_type == TOK_FUNC:
+            return self.func_decl()
+        elif self.peek().token_type == TOK_RET:
+            return self.ret_stmt()
+        elif self.peek().token_type == TOK_LOCAL:
+            return self.local_assign()
         else:
             left = self.expr()
             # Asssignment:
             if self.match(TOK_ASSIGN):
                 right = self.expr()
                 return Assignment(left, right, line = self.previous_token().line)
-            # Function call
+            # Function call statement (special type of statement wrapping a FuncCall expression)
             else:
-                pass
+                return FuncCallStmt(left)
 
     def stmts(self):
         stmts = []

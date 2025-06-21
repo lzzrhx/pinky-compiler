@@ -1,6 +1,7 @@
 class Environment:
     def __init__(self, parent = None):
         self.vars = {} # Dictionary to store variable names / values
+        self.funcs = {} # Dictionary to store functions
         self.parent = parent
 
     def get_var(self, name):
@@ -16,6 +17,30 @@ class Environment:
         if env.vars.get(name) is None:
             env = self
         env.vars[name] = value
+
+    def set_local(self, name, value):
+        '''
+        Sets a new variable in the current environment (shadowing any previous values of that variable name)
+        '''
+        self.vars[name] = value
+
+    def get_func(self, name):
+        '''
+        Searches the current environment and all parent environments for a function name
+        '''
+        while self:
+            value = self.funcs.get(name)
+            if value is not None:
+                return value
+            else:
+                self = self.parent
+        return None
+
+    def set_func(self, name, value):
+        '''
+        Declares a function (also stores the environment / context in which it was declared)
+        '''
+        self.funcs[name] = value
 
     def new_env(self):
         '''
