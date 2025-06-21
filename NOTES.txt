@@ -139,7 +139,7 @@
             + Dragon Curve
             + Simpified Cosine & Sine Functions
 
-   [-] #12: Code Generation
+   [X] #12: Code Generation
             + Code Generation & VMs
             + Example of Stack Instructions
             + Adding Classes for Compiler & VM
@@ -278,7 +278,8 @@
      + (from the AST) Code Generation
      + (from the AST) Type Checking
      + (from the AST) Code Optimization
-    - Tokens -> Lexer -> Model -> Parser -> Error handling -> Interpreting expressions -> Interpreting statements -> Identifiers and assignment (Environments) -> Loops (While / For) -> Functions
+    - Phase 1: Interpreter: Tokens -> Lexer -> Model -> Parser -> Error handling -> Interpreting expressions -> Interpreting statements -> Identifiers and assignment (Environments) -> Loops (While / For) -> Functions
+    - Phase 2: Compiler: Emitting Virtual Machine Instructions -> Virtual Machine
    
    - Structure of a program: Literals (numbers), identifiers (names), operators (assignment, comparison, grouping), keywords (reserved words), expressions (evaluates and results in a value), statements and nested statements (executes and cause a change), blocks
    
