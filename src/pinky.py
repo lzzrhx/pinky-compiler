@@ -48,11 +48,19 @@ if __name__ == '__main__':
         if VERBOSE:
             print()
             print(f'{Colors.GREEN}--------------------------------------------------------------------------------{Colors.WHITE}')
-            print(f'{Colors.GREEN}INTERPRETER:{Colors.WHITE}')
+            print(f'{Colors.GREEN}CODE GENERATION:{Colors.WHITE}')
             print(f'{Colors.GREEN}--------------------------------------------------------------------------------{Colors.WHITE}')
 
         compiler = Compiler()
         code = compiler.generate_code(ast)
         compiler.print()
-        #vm = VM()
-        #vm.run(code)
+        
+        if VERBOSE:
+            print()
+            print(f'{Colors.GREEN}--------------------------------------------------------------------------------{Colors.WHITE}')
+            print(f'{Colors.GREEN}VIRTUAL MACHINE:{Colors.WHITE}')
+            print(f'{Colors.GREEN}--------------------------------------------------------------------------------{Colors.WHITE}')
+        
+        vm = VM()
+        vm.run(code)
+        

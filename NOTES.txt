@@ -154,7 +154,7 @@
             + Step by Step Stack Execution
             + Where are Instructions Stored?
 
-   [-] #14: Writing a VM
+   [X] #14: Writing a VM
             + VM Execution
             + Unpacking Argument List
             + VM Expression Evaluation

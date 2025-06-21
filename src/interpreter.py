@@ -1,15 +1,9 @@
+from defs import *
 from model import *
 from tokens import *
 from utils import *
 from state import *
 import codecs
-
-################################################################################
-# Constants for different runtime value types
-################################################################################
-TYPE_NUMBER = 'TYPE_NUMBER' # 64-bit float
-TYPE_STRING = 'TYPE_STRING' # String managed by the host language (Python)
-TYPE_BOOL   = 'TYPE_BOOL'   # true or false
 
 class Interpreter:
     def __init__(self):

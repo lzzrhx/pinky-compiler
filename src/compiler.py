@@ -1,13 +1,7 @@
+from defs import *
 from model import *
 from tokens import *
 from utils import *
-
-################################################################################
-# Constants for different runtime value types
-################################################################################
-TYPE_NUMBER = 'TYPE_NUMBER' # 64-bit float
-TYPE_STRING = 'TYPE_STRING' # String managed by the host language (Python)
-TYPE_BOOL   = 'TYPE_BOOL'   # true or false
 
 class Compiler:
     def __init__(self):
@@ -56,7 +50,7 @@ class Compiler:
                 self.emit(('LE',))
             elif node.op.token_type == TOK_GE:
                 self.emit(('GE',))
-            elif node.op.token_type == TOK_EQ:
+            elif node.op.token_type == TOK_EQEQ:
                 self.emit(('EQ',))
             elif node.op.token_type == TOK_NE:
                 self.emit(('NE',))
@@ -66,7 +60,7 @@ class Compiler:
             if node.op.token_type == TOK_MINUS:
                 self.emit(('NEG',))
             elif node.op.token_type == TOK_NOT:
-                self.emit(('PUSH', (TYPE_NUMBER, 1)))
+                self.emit(('PUSH', (TYPE_BOOL, True)))
                 self.emit(('XOR',))
 
         elif isinstance(node, LogicalOp):
@@ -76,6 +70,9 @@ class Compiler:
                 self.emit(('AND',))
             if node.op.token_type == TOK_OR:
                 self.emit(('OR',))
+
+        elif isinstance(node, Grouping):
+            self.compile(node.value)
 
         elif isinstance(node, PrintStmt):
             self.compile(node.value)
