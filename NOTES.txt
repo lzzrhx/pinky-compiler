@@ -160,7 +160,7 @@
             + VM Expression Evaluation
             + VM Comparison Instructions
 
-   [-] #15: VM Jumps & Branches
+   [X] #15: VM Jumps & Branches
             + Generating Code for If Statements
             + Generating Then & Else Labels
             + VM Jumps & Branches

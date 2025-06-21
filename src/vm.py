@@ -65,10 +65,23 @@ class VM:
         self.pc = 0
         self.sp = 0
         self.is_running = False
+        self.labels = {}
+
+    def create_label_table(self, instructions):
+        self.labels = {}
+        pc = 0
+        for instruction in instructions:
+            opcode, *args = instruction
+            if opcode == 'LABEL':
+                self.labels.update({args[0]: pc})
+            pc += 1
 
     def run(self, instructions):
         self.is_running = True
-        
+       
+        # Generate a dictionary with label names and their corresponding PC positions in the code
+        self.create_label_table(instructions)
+
         while self.is_running:
             opcode, *args = instructions[self.pc]
             self.pc = self.pc + 1
@@ -93,7 +106,8 @@ class VM:
         lefttype, leftval = self.POP()
         if lefttype == TYPE_NUMBER and righttype == TYPE_NUMBER:
             self.PUSH((TYPE_NUMBER, leftval + rightval))
-        #TODO: add support for string concatenation
+        elif lefttype == TYPE_STRING or righttype == TYPE_STRING:
+            self.PUSH((TYPE_STRING, stringify(leftval) + stringify(rightval)))
         else:
             vm_error(f'Error on ADD between {lefttype} and {righttype}.', self.pc - 1)
 
@@ -221,6 +235,8 @@ class VM:
             self.PUSH((TYPE_BOOL, leftval == rightval))
         elif lefttype == TYPE_STRING and righttype == TYPE_STRING:
             self.PUSH((TYPE_BOOL, leftval == rightval))
+        elif lefttype == TYPE_BOOL and righttype == TYPE_BOOL:
+            self.PUSH((TYPE_BOOL, leftval == rightval))
         else:
             vm_error(f'Error on EQ between {lefttype} and {righttype}', self.pc - 1)
 
@@ -231,8 +247,18 @@ class VM:
             self.PUSH((TYPE_BOOL, leftval != rightval))
         elif lefttype == TYPE_STRING and righttype == TYPE_STRING:
             self.PUSH((TYPE_BOOL, leftval != rightval))
+        elif lefttype == TYPE_BOOL and righttype == TYPE_BOOL:
+            self.PUSH((TYPE_BOOL, leftval != rightval))
         else:
             vm_error(f'Error on NE between {lefttype} and {righttype}', self.pc - 1)
+
+    def JMP(self, name):
+        self.pc = self.labels[name]
+
+    def JMPZ(self, name):
+        valtype, val = self.POP()
+        if val == 0 or val == False:
+            self.JMP(name)
 
     def PRINT(self):
         valtype, val = self.POP()

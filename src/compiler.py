@@ -6,6 +6,11 @@ from utils import *
 class Compiler:
     def __init__(self):
         self.code = []
+        self.label_counter = 0
+
+    def make_label(self):
+        self.label_counter += 1
+        return f'LBL{self.label_counter}'
 
     def emit(self, instruction):
         self.code.append(instruction)
@@ -81,6 +86,20 @@ class Compiler:
             else:
                 self.emit(('PRINTLN',))
 
+        elif isinstance(node, IfStmt):
+            self.compile(node.test)
+            then_label = self.make_label()
+            else_label = self.make_label()
+            exit_label = self.make_label()
+            self.emit(('JMPZ', else_label))
+            self.emit(('LABEL', then_label))
+            self.compile(node.then_stmts)
+            self.emit(('JMP', exit_label))
+            self.emit(('LABEL', else_label))
+            if node.else_stmts:
+                self.compile(node.else_stmts)
+            self.emit(('LABEL', exit_label))
+
         elif isinstance(node, Stmts):
             for stmt in node.stmts:
                 self.compile(stmt)
@@ -92,15 +111,17 @@ class Compiler:
         return self.code
 
     def print(self):
+        i = 0
         for instruction in self.code:
             if instruction[0] == 'LABEL':
-                print(f"{instruction[1]}:")
+                print(f"{i:08} {instruction[1]}:")
                 continue
             if instruction[0] == 'PUSH':
-                print(f"    {instruction[0]} {stringify(instruction[1][1])}")
+                print(f"{i:08}     {instruction[0]} {stringify(instruction[1][1])}")
                 continue
             if len(instruction) == 1:
-                print(f"    {instruction[0]}")
+                print(f"{i:08}     {instruction[0]}")
             elif len(instruction) == 2:
-                print(f"    {instruction[0]} {instruction[1]}")
+                print(f"{i:08}     {instruction[0]} {instruction[1]}")
+            i += 1
 
