@@ -3,9 +3,17 @@ from model import *
 from tokens import *
 from utils import *
 
+class Symbol:
+    def __init__(self, name, depth = 0):
+        self.name = name
+        self.depth = depth
+
 class Compiler:
     def __init__(self):
         self.code = []
+        self.globals = []
+        self.locals = []
+        self.scope_depth = 0
         self.label_counter = 0
 
     def make_label(self):
@@ -14,6 +22,32 @@ class Compiler:
 
     def emit(self, instruction):
         self.code.append(instruction)
+
+    def get_symbol(self, name):
+        # Loop the locals
+        i = 0
+        for symbol in self.locals:
+            if symbol.name == name:
+                return (symbol, i)
+            i += 1
+        # Loop the globals
+        i = 0
+        for symbol in self.globals:
+            if symbol.name == name:
+                return (symbol, i)
+            i += 1
+        return None
+
+    def begin_block(self):
+        self.scope_depth += 1
+
+    def end_block(self):
+        self.scope_depth -= 1
+        i = len(self.locals) - 1
+        while len(self.locals) > 0 and self.locals[i].depth > self.scope_depth:
+            self.emit(('POP',))
+            self.locals.pop()
+            i -= 1
 
     def compile(self, node):
         if isinstance(node, Integer):
@@ -93,16 +127,49 @@ class Compiler:
             exit_label = self.make_label()
             self.emit(('JMPZ', else_label))
             self.emit(('LABEL', then_label))
+            self.begin_block()
             self.compile(node.then_stmts)
+            self.end_block()
             self.emit(('JMP', exit_label))
             self.emit(('LABEL', else_label))
             if node.else_stmts:
+                self.begin_block()
                 self.compile(node.else_stmts)
+                self.end_block()
             self.emit(('LABEL', exit_label))
 
         elif isinstance(node, Stmts):
             for stmt in node.stmts:
                 self.compile(stmt)
+
+        elif isinstance(node, Assignment):
+            self.compile(node.right)
+            symbol = self.get_symbol(node.left.name)
+            if not symbol:
+                new_symbol = Symbol(node.left.name, self.scope_depth)
+                if self.scope_depth == 0:
+                    self.globals.append(new_symbol)
+                    new_global_slot = len(self.globals) - 1
+                    self.emit(('STORE_GLOBAL', new_global_slot))
+                else:
+                    self.locals.append(new_symbol)
+            else:
+                sym, slot = symbol
+                if sym.depth == 0:
+                    self.emit(('STORE_GLOBAL', slot))
+                else:
+                    self.emit(('STORE_LOCAL', slot))
+
+        elif isinstance(node, Identifier):
+            symbol = self.get_symbol(node.name)
+            if not symbol:
+                compile_error(f'Variable {node.name} is not defined.', node.line)
+            else:
+                sym, slot = symbol
+                if sym.depth == 0:
+                    self.emit(('LOAD_GLOBAL', slot))
+                else:
+                    self.emit(('LOAD_LOCAL', slot))
 
     def generate_code(self, node):
         self.emit(('LABEL', 'START'))

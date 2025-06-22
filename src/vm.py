@@ -42,10 +42,10 @@
 #
 # Instructions to load and store variables
 #
-#      ('LOAD', name)        # Push a global variable name from memory to the stack
-#      ('STORE, name)        # Save top of the stack into global variable by name
-#      ('LOAD_LOCAL', name)  # Push a local variable name from memory to the stack
-#      ('STORE_LOCAL, name)  # Save top of the stack to local variable by name
+#      ('LOAD_GLOBAL', slot) # Push a global variable from memory to the stack
+#      ('STORE_GLOBAL, slot) # Save top of the stack into global variable
+#      ('LOAD_LOCAL', slot)  # Push a local variable from memory to the stack
+#      ('STORE_LOCAL, slot)  # Save top of the stack to local variable
 #
 # Instructions to manage control-flow (if-else, while, etc.)
 #
@@ -62,10 +62,11 @@ import codecs
 class VM:
     def __init__(self):
         self.stack = []
+        self.labels = {}
+        self.globals = {}
         self.pc = 0
         self.sp = 0
         self.is_running = False
-        self.labels = {}
 
     def create_label_table(self, instructions):
         self.labels = {}
@@ -259,6 +260,18 @@ class VM:
         valtype, val = self.POP()
         if val == 0 or val == False:
             self.JMP(name)
+
+    def LOAD_GLOBAL(self, slot):
+        self.PUSH(self.globals[slot])
+
+    def STORE_GLOBAL(self, slot):
+        self.globals[slot] = self.POP()
+
+    def LOAD_LOCAL(self, slot):
+        self.PUSH(self.stack[slot])
+
+    def STORE_LOCAL(self, slot):
+        self.stack[slot] = self.POP()
 
     def PRINT(self):
         valtype, val = self.POP()

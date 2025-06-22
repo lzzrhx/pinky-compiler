@@ -30,22 +30,27 @@ def stringify(val):
     return str(val)
 
 def lexing_error(message, lineno):
-    print(f'{Colors.RED}[Line {lineno}]: {message}{Colors.WHITE}')
+    print(f'{Colors.RED}LEXING ERR! [Line {lineno}]: {message}{Colors.WHITE}')
     import sys
     sys.exit(1)
 
 def parse_error(message, lineno):
-    print(f'{Colors.RED}[Line {lineno}]: {message}{Colors.WHITE}')
+    print(f'{Colors.RED}PARSE ERR! [Line {lineno}]: {message}{Colors.WHITE}')
     import sys
     sys.exit(1)
 
 def runtime_error(message, lineno):
-    print(f'{Colors.RED}[Line {lineno}]: {message}{Colors.WHITE}')
+    print(f'{Colors.RED}RUNTIME ERR! [Line {lineno}]: {message}{Colors.WHITE}')
+    import sys
+    sys.exit(1)
+
+def compile_error(message, lineno):
+    print(f'{Colors.RED}COMPILE ERR! [Line {lineno}]: {message}{Colors.WHITE}')
     import sys
     sys.exit(1)
 
 def vm_error(message, pc):
-    print(f'{Colors.RED}[PC: {pc}]: {message}{Colors.WHITE}')
+    print(f'{Colors.RED}VM ERR! [PC: {pc}]: {message}{Colors.WHITE}')
     import sys
     sys.exit(1)
 
