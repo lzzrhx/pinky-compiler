@@ -182,7 +182,7 @@
             + While Code Generation (Exercise)
             + Generating Code for While Statements
 
-   [-] #18: Stack & Register VMs
+   [X] #18: Stack & Register VMs
             + Register vs Stack VMs
             + Register-based Bytecode
             + CPython Bytecode Disassembly
@@ -391,6 +391,8 @@
       + yacc (Yet Another Compiler-Compiler) - Parser generator
       + ANTL (ANother Tool for Language Recognition) - Modern compiler-compiler
       + Other tools: Flex/Bison
+
+    + Two types of VMs: Stack-based and register-based
 
     + TODO: Implement a REPL
 
