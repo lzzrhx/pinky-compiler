@@ -178,7 +178,7 @@
             + Storing Globals by Slot Number
             + Program Symbols & Debug Info
 
-   [-] #17: VM Loops
+   [X] #17: VM Loops
             + While Code Generation (Exercise)
             + Generating Code for While Statements
 
@@ -279,7 +279,7 @@
      + (from the AST) Type Checking
      + (from the AST) Code Optimization
     - Phase 1: Interpreter: Tokens (tokens.py) -> Lexer (lexer.py) -> Model (model.py) -> Parser (parser.py) -> Error handling -> Interpreting expressions (interpreter.py) -> Interpreting statements -> Identifiers and assignment (Environments) -> Loops (While / For) -> Functions
-    - Phase 2: Compiler: Emitting Virtual Machine Instructions (compiler.py) -> Running Virtual Machine (vm.py) -> Jumps and Branches (If / Else) -> Storing and Loading Local / Global Variables
+    - Phase 2: Compiler: Emitting Virtual Machine Instructions (compiler.py) -> Running Virtual Machine (vm.py) -> VM: Jumps and Branches (If / Else) -> VM: Storing and Loading Local / Global Variables (Memory) -> VM: Loops (While)
    
    - Structure of a program: Literals (numbers), identifiers (names), operators (assignment, comparison, grouping), keywords (reserved words), expressions (evaluates and results in a value), statements and nested statements (executes and cause a change), blocks
    
