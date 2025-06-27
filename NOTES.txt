@@ -188,7 +188,7 @@
             + CPython Bytecode Disassembly
             + P-Machine & P-Code
 
-   [-] #19: VM Subroutines
+   [X] #19: VM Subroutines
             + Search Locals in Reverse Order
             + Function Code Generation
             + Activation Frames

@@ -8,59 +8,74 @@ from compiler import *
 from vm import *
 
 VERBOSE = True
+PRINT_SOURCE = True
+PRINT_LEXER = True
+PRINT_PARSER = True
+PRINT_COMPILER = True
+DEBUG_MODE_COMPILER = True
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         raise SystemExit('Usage: python3 pinky.py <filename>')
     filename = sys.argv[1]
 
+    # OPEN SOURCE FILE
     with open(filename) as file:
-        source = file.read()
-        tokens = Lexer(source).tokenize()
-        ast = Parser(tokens).parse()
         
-        if VERBOSE:
-            print(filename)
+        print()
+        print(f'{Colors.GREEN}* * * PINKY COMPILER * * *{Colors.WHITE}')
+        print(f'{Colors.GREEN}Running {filename}{Colors.WHITE}')
+
+        # SOURCE:
+        source = file.read()
+        if PRINT_SOURCE:
+            print()
             print(f'{Colors.GREEN}--------------------------------------------------------------------------------{Colors.WHITE}')
             print(f'{Colors.GREEN}SOURCE:{Colors.WHITE}')
             print(f'{Colors.GREEN}--------------------------------------------------------------------------------{Colors.WHITE}')
             print(source)
-            
+        
+        # LEXER:
+        tokens = Lexer(source).tokenize()
+        if PRINT_LEXER:
             print()
             print(f'{Colors.GREEN}--------------------------------------------------------------------------------{Colors.WHITE}')
-            print(f'{Colors.GREEN}TOKENS (LEXER):{Colors.WHITE}')
+            print(f'{Colors.GREEN}LEXER OUTPUT:{Colors.WHITE}')
             print(f'{Colors.GREEN}--------------------------------------------------------------------------------{Colors.WHITE}')
             for tok in tokens: print(tok)
-            
+        
+        # PARSER:
+        ast = Parser(tokens).parse()
+        if PRINT_PARSER:
             print()
             print(f'{Colors.GREEN}--------------------------------------------------------------------------------{Colors.WHITE}')
-            print(f'{Colors.GREEN}AST (PARSER):{Colors.WHITE}')
+            print(f'{Colors.GREEN}PARSER OUTPUT:{Colors.WHITE}')
             print(f'{Colors.GREEN}--------------------------------------------------------------------------------{Colors.WHITE}')
             print_ast(ast)
-            
-            print()
-            print(f'{Colors.GREEN}--------------------------------------------------------------------------------{Colors.WHITE}')
-            print(f'{Colors.GREEN}INTERPRETER:{Colors.WHITE}')
-            print(f'{Colors.GREEN}--------------------------------------------------------------------------------{Colors.WHITE}')
+        
+        # INTERPRETER:
         interpreter = Interpreter()
+        print()
+        print(f'{Colors.GREEN}--------------------------------------------------------------------------------{Colors.WHITE}')
+        print(f'{Colors.GREEN}INTERPRETER OUTPUT:{Colors.WHITE}')
+        print(f'{Colors.GREEN}--------------------------------------------------------------------------------{Colors.WHITE}')
         interpreter.interpret_ast(ast)
-        
-        if VERBOSE:
-            print()
-            print(f'{Colors.GREEN}--------------------------------------------------------------------------------{Colors.WHITE}')
-            print(f'{Colors.GREEN}CODE GENERATION:{Colors.WHITE}')
-            print(f'{Colors.GREEN}--------------------------------------------------------------------------------{Colors.WHITE}')
-
-        compiler = Compiler()
+       
+        # COMPILER:
+        compiler = Compiler(DEBUG_MODE_COMPILER)
         code = compiler.generate_code(ast)
-        compiler.print()
-        
-        if VERBOSE:
+        if PRINT_COMPILER:
             print()
             print(f'{Colors.GREEN}--------------------------------------------------------------------------------{Colors.WHITE}')
-            print(f'{Colors.GREEN}VIRTUAL MACHINE:{Colors.WHITE}')
+            print(f'{Colors.GREEN}COMPILER OUTPUT:{Colors.WHITE}')
             print(f'{Colors.GREEN}--------------------------------------------------------------------------------{Colors.WHITE}')
+            compiler.print()
         
+        # VIRTUAL MACHINE
         vm = VM()
+        print()
+        print(f'{Colors.GREEN}--------------------------------------------------------------------------------{Colors.WHITE}')
+        print(f'{Colors.GREEN}RUNNING VIRTUAL MACHINE:{Colors.WHITE}')
+        print(f'{Colors.GREEN}--------------------------------------------------------------------------------{Colors.WHITE}')
         vm.run(code)
 

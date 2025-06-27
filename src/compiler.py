@@ -3,16 +3,23 @@ from model import *
 from tokens import *
 from utils import *
 
+SYM_VAR = 'SYM_VAR'
+SYM_FUNC = 'SYM_FUNC'
+
 class Symbol:
-    def __init__(self, name, depth = 0):
+    def __init__(self, name, symtype = SYM_VAR, depth = 0, arity = 0):
         self.name = name
         self.depth = depth
+        self.symtype = symtype
+        self.arity = arity
 
 class Compiler:
-    def __init__(self):
+    def __init__(self, debug_mode):
+        self.debug_mode = debug_mode
         self.code = []
         self.globals = []
         self.locals = []
+        self.functions = []
         self.scope_depth = 0
         self.label_counter = 0
 
@@ -23,19 +30,21 @@ class Compiler:
     def emit(self, instruction):
         self.code.append(instruction)
 
-    def get_symbol(self, name):
+    def get_func_symbol(self, name):
+        for symbol in reversed(self.functions):
+            if symbol.name == name:
+                return symbol
+        return None
+
+    def get_var_symbol(self, name):
         # Loop the locals
-        i = 0
-        for symbol in self.locals:
+        for index, symbol in reversed(list(enumerate(self.locals))):
             if symbol.name == name:
-                return (symbol, i)
-            i += 1
+                return (symbol, index)
         # Loop the globals
-        i = 0
-        for symbol in self.globals:
+        for index, symbol in reversed(list(enumerate(self.globals))):
             if symbol.name == name:
-                return (symbol, i)
-            i += 1
+                return (symbol, index)
         return None
 
     def begin_block(self):
@@ -158,15 +167,16 @@ class Compiler:
 
         elif isinstance(node, Assignment):
             self.compile(node.right)
-            symbol = self.get_symbol(node.left.name)
+            symbol = self.get_var_symbol(node.left.name)
             if not symbol:
-                new_symbol = Symbol(node.left.name, self.scope_depth)
+                new_symbol = Symbol(node.left.name, symtype=SYM_VAR, depth=self.scope_depth)
                 if self.scope_depth == 0:
                     self.globals.append(new_symbol)
                     new_global_slot = len(self.globals) - 1
                     self.emit(('STORE_GLOBAL', new_global_slot))
                 else:
                     self.locals.append(new_symbol)
+                    if self.debug_mode: self.emit(('SET_SLOT', str(len(self.locals) - 1) + f" ({new_symbol.name})"))
             else:
                 sym, slot = symbol
                 if sym.depth == 0:
@@ -174,8 +184,14 @@ class Compiler:
                 else:
                     self.emit(('STORE_LOCAL', slot))
 
+        elif isinstance(node, LocalAssignment):
+            self.compile(node.right)
+            new_symbol = Symbol(name = node.left.name, symtype = SYM_VAR, depth = self.scope_depth)
+            self.locals.append(new_symbol)
+            self.emit(('SET_SLOT', str(len(self.locals) - 1) + " (" + str(new_symbol.name) + ")"))
+
         elif isinstance(node, Identifier):
-            symbol = self.get_symbol(node.name)
+            symbol = self.get_var_symbol(node.name)
             if not symbol:
                 compile_error(f'Variable {node.name} is not defined.', node.line)
             else:
@@ -184,6 +200,50 @@ class Compiler:
                     self.emit(('LOAD_GLOBAL', slot))
                 else:
                     self.emit(('LOAD_LOCAL', slot))
+
+        elif isinstance(node, FuncDecl):
+            var = self.get_var_symbol(node.name)
+            func = self.get_func_symbol(node.name)
+            if func:
+                compile_error(f'A function with the name {node.name} was already declared.', node.line)
+            if var:
+                compile_error(f'A variable with the name {node.name} was already defined in the scope.', node.line)
+            new_func = Symbol(node.name, symtype = SYM_FUNC, depth=self.scope_depth, arity = len(node.params))
+            self.functions.append(new_func)
+            end_label = self.make_label()
+            self.emit(('JMP', end_label))
+            self.emit(('LABEL', new_func.name))
+            self.begin_block()
+            # Set params as local vars inside this function
+            for param in node.params:
+                new_symbol = Symbol(name = param.name, symtype = SYM_VAR, depth = self.scope_depth)
+                self.locals.append(new_symbol)
+                self.emit(('SET_SLOT', str(len(self.locals) - 1) + " (" + str(new_symbol.name) + ")"))
+            self.compile(node.stmts)
+            self.end_block()
+            self.emit(('PUSH', (TYPE_NUMBER, 0)))
+            self.emit(('RTS',))
+            self.emit(('LABEL', end_label))
+
+        elif isinstance(node, FuncCall):
+            func = self.get_func_symbol(node.name)
+            if not func:
+                compile_error(f'Not found declaration for function {node.name}.', node.line)
+            if func.arity != len(node.args):
+                compile_error(f'Function expected {func.arity} but {len(node.args)} args were passed.', node.line)
+            for arg in node.args:
+                self.compile(arg)
+            numargs = (TYPE_NUMBER, len(node.args))
+            self.emit(('PUSH', numargs))
+            self.emit(('JSR', node.name))
+
+        elif isinstance(node, RetStmt):
+            self.compile(node.value)
+            self.emit(('RTS',))
+
+        elif isinstance(node, FuncCallStmt):
+            self.compile(node.expr)
+            self.emit(('POP',))
 
     def generate_code(self, node):
         self.emit(('LABEL', 'START'))
@@ -195,14 +255,14 @@ class Compiler:
         i = 0
         for instruction in self.code:
             if instruction[0] == 'LABEL':
-                print(f"{i:08} {instruction[1]}:")
+                print(f"{instruction[1]}:")
                 continue
             if instruction[0] == 'PUSH':
-                print(f"{i:08}     {instruction[0]} {stringify(instruction[1][1])}")
+                print(f"    {instruction[0]} {stringify(instruction[1][1])}")
                 continue
             if len(instruction) == 1:
-                print(f"{i:08}     {instruction[0]}")
+                print(f"    {instruction[0]}")
             elif len(instruction) == 2:
-                print(f"{i:08}     {instruction[0]} {instruction[1]}")
+                print(f"    {instruction[0]} {instruction[1]}")
             i += 1
 

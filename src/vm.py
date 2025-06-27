@@ -59,9 +59,16 @@ from defs import *
 from utils import *
 import codecs
 
+class Frame:
+    def __init__(self, name, ret_pc, fp):
+        self.name = name
+        self.ret_pc = ret_pc
+        self.fp = fp
+
 class VM:
     def __init__(self):
         self.stack = []
+        self.frames = []
         self.labels = {}
         self.globals = {}
         self.pc = 0
@@ -261,6 +268,21 @@ class VM:
         if val == 0 or val == False:
             self.JMP(name)
 
+    def JSR(self, label):
+        numargstype, numargs = self.POP()
+        base_pointer = self.sp - numargs
+        new_frame = Frame(name = label, ret_pc = self.pc, fp = base_pointer)
+        self.frames.append(new_frame)
+        self.pc = self.labels[label]
+
+    def RTS(self):
+        result = self.stack[self.sp - 1]
+        while self.sp > self.frames[-1].fp:
+            self.POP()
+        self.PUSH(result)
+        self.pc = self.frames[-1].ret_pc
+        self.frames.pop()
+
     def LOAD_GLOBAL(self, slot):
         self.PUSH(self.globals[slot])
 
@@ -268,10 +290,17 @@ class VM:
         self.globals[slot] = self.POP()
 
     def LOAD_LOCAL(self, slot):
+        if len(self.frames) > 0:
+            slot += self.frames[-1].fp
         self.PUSH(self.stack[slot])
 
     def STORE_LOCAL(self, slot):
+        if len(self.frames) > 0:
+            slot += self.frames[-1].fp
         self.stack[slot] = self.POP()
+
+    def SET_SLOT(self, slot):
+        pass
 
     def PRINT(self):
         valtype, val = self.POP()

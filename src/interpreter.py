@@ -239,6 +239,7 @@ class Interpreter:
             # Interpret the stmts of the function declaration
             try:
                 self.interpret(func_decl.stmts, new_func_env)
+                return (TYPE_NUMBER, 0)
             except Return as e:
                 return e.args[0] # Args is the arguments passed to the exception
 
