@@ -206,7 +206,7 @@
             + Type Annotations
             + Purposes of a Type System
 
-   [-] #21: Bonus: Shunting Yard
+   [X] #21: Bonus: Shunting Yard
             + Shunting Yard for Simple Expressions
             + Exercise: Shunting Yard Evaluation
             + A Simple Shunting Yard Evaluation
