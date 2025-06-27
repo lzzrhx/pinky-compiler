@@ -201,7 +201,7 @@
             + Return Statements
             + Removing Inactive Frame Slots
 
-   [-] #20: Type Systems & Type Checkers
+   [X] #20: Type Systems & Type Checkers
             + Type Systems
             + Type Annotations
             + Purposes of a Type System
