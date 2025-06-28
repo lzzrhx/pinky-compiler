@@ -222,7 +222,7 @@
             + Pratt Code (Right Associativity)
             + Pratt Code (Prefix Unary Minus)
 
-   [-] #23: Bonus: PEG
+   [X] #23: Bonus: PEG
             + Parsing Expression Grammar
             + Using a PEG Library
 
@@ -394,22 +394,43 @@
 
     + Two types of VMs: Stack-based and register-based
 
-    + Shunting-Yard Algoritm:
-      + Simple to implement
-      + Good for calculators
+    + Other types of parser (alternatives to Recursive Descent Parsing):
+      + Shunting-Yard Algoritm:
+        + Simple to implement
+        + Good for calculators
 
-    + Pratt Parser:
-      + Operator precedence parser
-      + First described by Vaughan Pratt in his 1973 paper "Top Down Operator Precedence"
-      + A bit more flexible and powerful than a recursive descent parser
-      + Does not rely on a formal grammar with explicit written production rules (as might be seen in a context-free grammar for a recursive descent or LR parser)
-      + Instead, all we need is a stream of tokens that will be scanned using a structure encoded in NUD/LED functions and a precedence table to guide parsing
-      + Flexible, easy to modify, and it can parse expressions with different operator precedence, associativity, prefix, postfix, infix, and misfix syntax
-      + Works by scanning the input tokens and classifying them into two categories (functions):
-        1. Operators that operate from the right with no left context
-           + An example of this is the unary minus: -1
-           + "Null-Denotation" or NUD
-        2. Operators that operate from left-to-right with a left context
-           + An example of this is a simple infox operator: 1 + 2
-           + Pratt calls the specification of how an operator consumes to the right with a left-context its "Left-Denotation" or LED
+      + Pratt Parser:
+        + Operator precedence parser
+        + First described by Vaughan Pratt in his 1973 paper "Top Down Operator Precedence"
+        + A bit more flexible and powerful than a recursive descent parser
+        + Does not rely on a formal grammar with explicit written production rules (as might be seen in a context-free grammar for a recursive descent or LR parser)
+        + Instead, all we need is a stream of tokens that will be scanned using a structure encoded in NUD/LED functions and a precedence table to guide parsing
+        + Flexible, easy to modify, and it can parse expressions with different operator precedence, associativity, prefix, postfix, infix, and misfix syntax
+        + Works by scanning the input tokens and classifying them into two categories (functions):
+          1. Operators that operate from the right with no left context
+             + An example of this is the unary minus: -1
+             + "Null-Denotation" or NUD
+          2. Operators that operate from left-to-right with a left context
+             + An example of this is a simple infox operator: 1 + 2
+             + Pratt calls the specification of how an operator consumes to the right with a left-context its "Left-Denotation" or LED
+
+      + Parsing Expression Grammar (PEG):
+        + Type of formal grammar used to describe a formal language
+        + Syntactically, PEGs look similar to context-free grammars and EBNF, but interpreted differently
+          + The choice operator (|) is replaced by the "first match" operator (/)
+          + PEGs translate EBNF to recursive descent with infinite lookahead
+          + We try to match a pattern and, otherwise we backtrack
+        + Examples of grammar defined in PEG format:
+           expr   <- term   (('+' / '-') term)*
+           term   <- factor (('*' / '/') factor)*
+           factor <- / '(' + expr + ')'
+           number <- [0-9]+
+        + PEG parsers typically don't need a separate lexer and their productions resemble regular expressions
+        + PEGs use prioritized choice to deal with ambiguities such as dangling-else, making PEG grammars unambigous
+        + PEGs vs CFG:
+          + PEGs inherently define deterministic grammars. The parsing process is unambigous because choices are ordered (using /). Once a match is found, the parser does not backtrack to try finding other alternatives in the same ordered choice
+          + CFGs often lead to ambiguity, requiring extra mechanisms like operator precedence rules to resolve which parse tree is correct
+          + PEG parsers allow for arbitrary lookahead. PEG constructs like the operators & (positive lookahead) and ! (negative lookahead) enable the parser to make decisions based on context without consuming the input
+          + CFGs typically rely on finite lookahead or require more complex algorithms, like LALR og GLR parsing
+        + PEG library: LPeg (Lua)
 
