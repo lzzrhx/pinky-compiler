@@ -226,7 +226,7 @@
             + Parsing Expression Grammar
             + Using a PEG Library
 
-   [-] #24: Bonus: Optimizations
+   [X] #24: Bonus: Optimizations
             + Optimizations & Transformations
             + Constant Folding & Propagation
             + Algebraic Simplifications
@@ -433,4 +433,26 @@
           + PEG parsers allow for arbitrary lookahead. PEG constructs like the operators & (positive lookahead) and ! (negative lookahead) enable the parser to make decisions based on context without consuming the input
           + CFGs typically rely on finite lookahead or require more complex algorithms, like LALR og GLR parsing
         + PEG library: LPeg (Lua)
+
+    + Code optimization & transformations:
+      + Code optimimization is a transformation technique which tries to improve the intermediate code by making it consume fewer resources
+      + Machine-Independent Optimization: Attempt to improve the intermediate code to get a better target code as the output. This intermediate code is transformed but it does not involve any CPU registers or absolute memory addresses
+      + Machine-Dependent Optimization: Done after the target code has been generated and transformed according to the final target machine architecture. It involves CPU registers and might have absolute memory references rather than relative ones
+      + Model transformations:
+        + Usually happens after type checking
+        + Transformations might cause the model to be "unrecognizable" when compared to the original source code, which might complicate how errors are reported
+        + Optimization transformations should produce a semantically equivalent model when compared to the original source code
+      + Types of optimization:
+        + Constant folding & constant propagation: Pre-compute constants at compile-time
+        + Algebraic Simplifications
+        + Dead Code Elimination
+        + Syntactic Sugar
+        + Loop-Unrolling & Inlining
+        + Branch Prediction
+        + Vectorization
+        + Tail-Call
+        + Machine-Dependent & Peephole Optimization
+    
+    + Compiler Explorer: https://godbolt.org/
+
 
