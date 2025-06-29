@@ -236,7 +236,7 @@
             + Branch Prediction & Vectorization
             + Tail Call & Peephole Optimization
 
-   [-] #25: Bonus: LLVM
+   [X] #25: Bonus: LLVM
             + LLVM IR
             + Function Definition in LLVM IR
             + Using Clang to Visualize LLVM IR
@@ -258,7 +258,7 @@
             + Emitting LLVM for If Statements
             + Emitting LLVM IR for While Statements
 
-   [-] #27: Conclusion & Next Steps
+   [X] #27: Conclusion & Next Steps
             + Copyright & Content Distribution
             + Similar Courses
             + Conclusion & Next Steps
@@ -452,7 +452,31 @@
         + Vectorization
         + Tail-Call
         + Machine-Dependent & Peephole Optimization
+
+    + LLVM:
+      + Low Level Virtual Machine
+      + Umbrella name for a number of software components that can be used to build compilers
+      + Used to create new languages and improve existing ones
+      + Generates machine code: machine-native code for a specific chip architecture
+      + Optimizes code: at compile-time, link-time, runtime and idle-time
+      + Standardizes the process of turning code into machine code: represents source code in a language-independent IR
+      + Its flagship product is Clang, a high-end compiler
     
+    + Clang follows the orthodox compiler architecture flow:
+      + Frontend that parses source code into an AST and lowers it into an intermediate representation (IR)
+      + Middleend optimizer that transform the IR into better IR
+      + Backend that converts IR into machine code for a particular target platform/architecture
+
+      .c -> (parser) -> AST -> (lowering) -> LLVM IR (with optimizer) -> (backend) -> Machine Code
+       \                                /    \                                                  /  
+         - - - - Clang Frontend - - - -        - - - - - - - - - - - LLVM - - - - - - - - - - -
+
+                (LLVM often refers to just the optimizer & backend parts of Clang)
+
     + Compiler Explorer: https://godbolt.org/
+
+    + llvmlite (LLVM Python binding):
+      + https://github.com/numba/llvmlite
+      + pacman -S python-llvmlite
 
 
